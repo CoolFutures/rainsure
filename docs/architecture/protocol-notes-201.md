@@ -1,4 +1,4 @@
-# Protocol Architecture Notes — #858
+# Protocol Architecture Notes — #201
 
 **Author:** Freya Hansen
 **Date:** 2026-01-06
