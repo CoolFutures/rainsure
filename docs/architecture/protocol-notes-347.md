@@ -1,7 +1,7 @@
-# Protocol Architecture Notes — #201
+# Protocol Architecture Notes — #347
 
-**Author:** Freya Hansen
-**Date:** 2026-01-06
+**Author:** Ananya Singh
+**Date:** 2026-01-30
 **Document Type:** Architecture / Design
 
 ## Component Overview
