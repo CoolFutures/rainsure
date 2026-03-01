@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = [
+    "contracts/policy-factory",
+    "contracts/risk-pool",
+    "contracts/payout-engine",
+]
+
+[workspace.dependencies]
+soroban-sdk = { version = "21.0.1" }
+
+[workspace.package]
+rust-version = "1.78"

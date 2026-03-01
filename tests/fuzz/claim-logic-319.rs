@@ -1,5 +1,5 @@
-//! Fuzz test suite for RainSure claim logic — #450
-//! Author: Freya Hansen (2026-02-10)
+//! Fuzz test suite for RainSure claim logic — #319
+//! Author: Segun Lawal (2026-03-01)
 //!
 //! Tests the payout-engine contract's trigger evaluation and
 //! claim execution paths against adversarial oracle inputs.
@@ -11,7 +11,7 @@ use soroban_sdk::{Env, Address, testutils::Address as _};
 /// A reading of exactly `trigger_mm - 1` must trigger payout.
 /// A reading of exactly `trigger_mm` must NOT trigger payout.
 #[test]
-fn fuzz_boundary_trigger_threshold_450() {
+fn fuzz_boundary_trigger_threshold_319() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -45,7 +45,7 @@ fn fuzz_boundary_trigger_threshold_450() {
 /// Fuzz: overflow protection on large coverage amounts.
 /// Coverage values near i128::MAX must not overflow in payout calc.
 #[test]
-fn fuzz_coverage_overflow_protection_450() {
+fn fuzz_coverage_overflow_protection_319() {
     // Maximum safe coverage: 100,000 XLM (100_000 * 10_000_000 stroops)
     let max_safe_coverage: i128 = 100_000 * 10_000_000;
     let overflow_candidate = max_safe_coverage.checked_add(1);
@@ -58,7 +58,7 @@ fn fuzz_coverage_overflow_protection_450() {
 /// Fuzz: multi-oracle consensus with conflicting readings.
 /// When oracle readings diverge by > 20mm, the median must be used.
 #[test]
-fn fuzz_oracle_consensus_divergence_450() {
+fn fuzz_oracle_consensus_divergence_319() {
     // Three oracles: two agree, one is an outlier
     let readings: [i128; 3] = [28, 31, 95]; // mm
     let mut sorted = readings;
@@ -77,7 +77,7 @@ fn fuzz_oracle_consensus_divergence_450() {
 /// Fuzz: expired policy cannot receive payout.
 /// Trigger events after policy expiry timestamp must be rejected.
 #[test]
-fn fuzz_expired_policy_rejection_450() {
+fn fuzz_expired_policy_rejection_319() {
     let policy_duration_days: u64 = 90;
     let seconds_per_day: u64 = 86_400;
     let expiry_offset = policy_duration_days * seconds_per_day;
