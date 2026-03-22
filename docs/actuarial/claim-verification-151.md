@@ -1,7 +1,7 @@
-# Claim Verification Mathematics — Refactor #748
+# Claim Verification Mathematics — Refactor #151
 
-**Author:** Helene Dubois
-**Date:** 2026-03-16
+**Author:** Musa Abubakar
+**Date:** 2026-03-22
 **Type:** Refactor / Actuarial
 
 ## Overview
