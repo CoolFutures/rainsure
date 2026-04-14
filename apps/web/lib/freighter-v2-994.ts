@@ -1,6 +1,6 @@
 /**
- * Freighter Wallet v2 Integration — #655
- * Author: Kunle Badmus (2026-04-14)
+ * Freighter Wallet v2 Integration — #994
+ * Author: Freya Hansen (2026-04-14)
  *
  * Wraps the Freighter browser extension API for RainSure transactions.
  * Handles network validation, signing, and submission to Soroban testnet.
