@@ -1,7 +1,7 @@
-# Protocol Architecture Notes — #705
+# Protocol Architecture Notes — #312
 
-**Author:** Freya Hansen
-**Date:** 2026-05-09
+**Author:** Kunle Badmus
+**Date:** 2026-05-11
 **Document Type:** Architecture / Design
 
 ## Component Overview
