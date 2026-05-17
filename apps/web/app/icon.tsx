@@ -18,49 +18,18 @@ export default function Icon() {
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
-          {/* Cloud body */}
-          <div style={{
-            display: 'flex',
-            position: 'relative',
-            alignItems: 'flex-end',
-          }}>
-            {/* Main cloud shape using stacked rounded divs */}
-            <div style={{
-              width: '20px',
-              height: '10px',
-              background: '#06b6d4',
-              borderRadius: '10px 10px 4px 4px',
-              position: 'relative',
-            }}>
-              {/* Left bump */}
-              <div style={{
-                position: 'absolute',
-                width: '9px',
-                height: '9px',
-                background: '#06b6d4',
-                borderRadius: '50%',
-                top: '-5px',
-                left: '2px',
-              }} />
-              {/* Right bump */}
-              <div style={{
-                position: 'absolute',
-                width: '11px',
-                height: '11px',
-                background: '#06b6d4',
-                borderRadius: '50%',
-                top: '-7px',
-                right: '2px',
-              }} />
-            </div>
+          {/* Cloud: top bumps row */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0px' }}>
+            <div style={{ width: '8px', height: '8px', background: '#06b6d4', borderRadius: '50%' }} />
+            <div style={{ width: '11px', height: '11px', background: '#06b6d4', borderRadius: '50%', marginLeft: '-3px' }} />
           </div>
-
-          {/* Rain drops */}
-          <div style={{ display: 'flex', gap: '4px', marginTop: '1px' }}>
-            <div style={{ width: '2px', height: '5px', background: '#22d3ee', borderRadius: '1px', opacity: 0.9 }} />
+          {/* Cloud base */}
+          <div style={{ display: 'flex', width: '20px', height: '7px', background: '#06b6d4', borderRadius: '4px', marginTop: '-6px' }} />
+          {/* Rain drops row */}
+          <div style={{ display: 'flex', gap: '3px', marginTop: '2px' }}>
+            <div style={{ width: '2px', height: '5px', background: '#22d3ee', borderRadius: '1px' }} />
             <div style={{ width: '2px', height: '5px', background: '#22d3ee', borderRadius: '1px', opacity: 0.7 }} />
-            <div style={{ width: '2px', height: '5px', background: '#22d3ee', borderRadius: '1px', opacity: 0.9 }} />
-            <div style={{ width: '2px', height: '5px', background: '#22d3ee', borderRadius: '1px', opacity: 0.6 }} />
+            <div style={{ width: '2px', height: '5px', background: '#22d3ee', borderRadius: '1px' }} />
           </div>
         </div>
       </div>

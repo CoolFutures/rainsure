@@ -17,61 +17,44 @@ export default function AppleIcon() {
           borderRadius: '40px',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
-          {/* Cloud */}
-          <div style={{ position: 'relative', width: '110px', height: '60px' }}>
-            {/* Main cloud body */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+          {/* Cloud shape using flex only */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {/* Top bumps */}
+            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <div style={{ width: '42px', height: '42px', background: '#06b6d4', borderRadius: '50%' }} />
+              <div style={{ width: '58px', height: '58px', background: '#06b6d4', borderRadius: '50%', marginLeft: '-14px' }} />
+              <div style={{ width: '38px', height: '38px', background: '#06b6d4', borderRadius: '50%', marginLeft: '-10px' }} />
+            </div>
+            {/* Cloud base */}
             <div style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: '45px',
+              display: 'flex',
+              width: '110px',
+              height: '38px',
               background: '#06b6d4',
-              borderRadius: '22px',
-            }} />
-            {/* Left bump */}
-            <div style={{
-              position: 'absolute',
-              width: '48px',
-              height: '48px',
-              background: '#06b6d4',
-              borderRadius: '50%',
-              bottom: '22px',
-              left: '10px',
-            }} />
-            {/* Right bump (larger) */}
-            <div style={{
-              position: 'absolute',
-              width: '58px',
-              height: '58px',
-              background: '#06b6d4',
-              borderRadius: '50%',
-              bottom: '20px',
-              right: '10px',
+              borderRadius: '6px 6px 18px 18px',
+              marginTop: '-22px',
             }} />
           </div>
 
           {/* Rain drops */}
-          <div style={{ display: 'flex', gap: '14px' }}>
-            {[0.9, 0.6, 1, 0.7, 0.9].map((opacity, i) => (
-              <div key={i} style={{
-                width: '6px',
-                height: '22px',
-                background: '#22d3ee',
-                borderRadius: '3px',
-                opacity,
-              }} />
-            ))}
+          <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
+            <div style={{ display: 'flex', width: '7px', height: '24px', background: '#22d3ee', borderRadius: '4px' }} />
+            <div style={{ display: 'flex', width: '7px', height: '18px', background: '#22d3ee', borderRadius: '4px', opacity: 0.7 }} />
+            <div style={{ display: 'flex', width: '7px', height: '24px', background: '#22d3ee', borderRadius: '4px' }} />
+            <div style={{ display: 'flex', width: '7px', height: '18px', background: '#22d3ee', borderRadius: '4px', opacity: 0.7 }} />
+            <div style={{ display: 'flex', width: '7px', height: '24px', background: '#22d3ee', borderRadius: '4px' }} />
           </div>
 
-          {/* Brand name */}
+          {/* Brand text */}
           <div style={{
+            display: 'flex',
             color: '#06b6d4',
-            fontSize: '20px',
+            fontSize: '22px',
             fontWeight: 900,
-            letterSpacing: '0.2em',
+            letterSpacing: '0.18em',
             fontFamily: 'sans-serif',
+            marginTop: '4px',
           }}>
             RAINSURE
           </div>
