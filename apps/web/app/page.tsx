@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import {
-  CloudRain, Droplets, ShieldCheck, Zap, Globe,
+  CloudRain, ShieldCheck, Zap, Globe,
   Network, ArrowRight, Moon, Sun, Wallet, X, ChevronRight,
   AlertCircle, TrendingUp, Lock, Layers,
   Database, Cpu, Users, GitBranch
@@ -181,6 +181,73 @@ const STATS = [
   { label: "Settlement", value: "< 1s", icon: Zap, color: "text-cyan-300" },
 ];
 
+const ORACLE_FEED = [
+  { region: "Sahel · Mali", mm: "12.4", status: "TRIGGERED", ts: "00:03" },
+  { region: "Punjab · India", mm: "38.1", status: "NORMAL", ts: "00:07" },
+  { region: "Rift Valley · KE", mm: "8.9", status: "TRIGGERED", ts: "00:11" },
+  { region: "Sindh · Pakistan", mm: "41.2", status: "NORMAL", ts: "00:14" },
+  { region: "Niger Delta · NG", mm: "6.3", status: "TRIGGERED", ts: "00:18" },
+];
+
+const THRESHOLD_MM = 35;
+
+function RainfallBarsViz() {
+  const COUNT = 32;
+  const seed = Array.from({ length: COUNT }, (_, i) => {
+    const base = 15 + Math.abs(Math.sin(i * 1.7) * 75);
+    return Math.round(base);
+  });
+  const [heights, setHeights] = useState(seed);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setHeights(prev =>
+        prev.map(h => {
+          const delta = (Math.random() - 0.48) * 18;
+          return Math.max(4, Math.min(100, h + delta));
+        })
+      );
+    }, 1600);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 flex items-end gap-[2px] px-6 lg:px-10" style={{ paddingBottom: "clamp(220px, 38vh, 320px)" }}>
+      {/* Threshold line */}
+      <div
+        className="absolute left-0 right-0 pointer-events-none z-10"
+        style={{ bottom: `calc(clamp(220px, 38vh, 320px) + ${THRESHOLD_MM}%)` }}
+      >
+        <div className="relative">
+          <div className="absolute inset-x-0 h-px border-t border-dashed border-orange-400/50" />
+          <span className="absolute right-6 lg:right-10 -top-5 text-[8px] font-mono text-orange-400/80 tracking-[0.35em] uppercase whitespace-nowrap">
+            Trigger · {THRESHOLD_MM}mm
+          </span>
+        </div>
+      </div>
+
+      {heights.map((h, i) => (
+        <motion.div
+          key={i}
+          className="flex-1 rounded-t-[2px] origin-bottom"
+          animate={{ scaleY: h / 100 }}
+          initial={{ scaleY: h / 100 }}
+          transition={{ duration: 1.4, ease: [0.4, 0, 0.2, 1] }}
+          style={{
+            height: "100%",
+            background: h < THRESHOLD_MM
+              ? "rgba(251,146,60,0.55)"
+              : "rgba(6,182,212,0.28)",
+            boxShadow: h < THRESHOLD_MM
+              ? "0 0 6px rgba(251,146,60,0.3)"
+              : "0 0 4px rgba(6,182,212,0.15)",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 const PILLARS = [
   {
     icon: Cpu, title: "Policy Engine", tag: "contracts/policy-engine",
@@ -240,25 +307,41 @@ export default function RainSurePage() {
 
       <WalletModal isOpen={walletOpen} onClose={() => setWalletOpen(false)} wallet={wallet} />
 
-      {/* HEADER */}
+      {/* HEADER — full-width mission control style */}
       <header className="fixed top-0 inset-x-0 z-50">
+        {/* Oracle status strip */}
         <div className={cn(
-          "mx-4 mt-4 flex items-center justify-between px-5 py-3 rounded-2xl border backdrop-blur-xl",
-          isDark
-            ? "bg-slate-950/70 border-white/5"
-            : "bg-white/70 border-slate-200"
+          "h-7 flex items-center px-6 gap-5 border-b text-[8px] font-mono uppercase tracking-[0.35em]",
+          isDark ? "bg-slate-900 border-slate-800" : "bg-slate-100 border-slate-300"
         )}>
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500 flex items-center justify-center shadow-lg shadow-cyan-500/30">
-              <CloudRain className="w-5 h-5 text-slate-950" />
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+            <span className="text-orange-400">3 Triggers Active</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
+            <span className={isDark ? "text-slate-600" : "text-slate-400"}>87 Oracle Nodes Online</span>
+          </div>
+          <div className="ml-auto flex items-center gap-5">
+            <span className={isDark ? "text-slate-700" : "text-slate-400"}>24H Payouts · $218K</span>
+            <span className="text-cyan-500">Stellar Mainnet</span>
+          </div>
+        </div>
+        {/* Main nav */}
+        <div className={cn(
+          "flex items-center h-13 border-b backdrop-blur-xl",
+          isDark ? "bg-slate-950/90 border-slate-800/70" : "bg-white/95 border-slate-200"
+        )}>
+          <div className="flex items-center gap-3 px-6 border-r border-slate-800/60 h-full">
+            <div className="w-7 h-7 bg-cyan-500 flex items-center justify-center">
+              <CloudRain className="w-4 h-4 text-slate-950" />
             </div>
-            <div>
-              <span className={cn("font-black text-lg uppercase tracking-tight leading-none block", isDark ? "text-white" : "text-slate-900")}>RainSure</span>
-              <span className="text-[9px] font-bold text-cyan-500 uppercase tracking-[0.4em]">Soroban · Mainnet</span>
-            </div>
+            <span className={cn("font-black text-sm uppercase tracking-[0.1em]", isDark ? "text-white" : "text-slate-900")}>
+              RainSure
+            </span>
           </div>
 
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center h-full flex-1">
             {[
               { label: "Protocol", href: "/" },
               { label: "Policies", href: "/policies" },
@@ -268,26 +351,27 @@ export default function RainSurePage() {
               { label: "Roadmap", href: "/roadmap" },
             ].map(({ label, href }) => (
               <a key={label} href={href}
-                className={cn("text-[11px] font-bold uppercase tracking-widest transition-colors hover:text-cyan-400",
-                  isDark ? "text-slate-500" : "text-slate-500")}
+                className={cn(
+                  "px-5 h-full flex items-center text-[11px] font-bold uppercase tracking-widest border-b-2 border-transparent",
+                  "hover:text-cyan-400 hover:border-cyan-500 hover:bg-cyan-500/5 transition-all",
+                  isDark ? "text-slate-500" : "text-slate-500"
+                )}
               >{label}</a>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 px-6 ml-auto border-l border-slate-800/60 h-full">
             <ThemeToggle />
             {wallet.address ? (
-              <button
-                onClick={() => setWalletOpen(true)}
-                className={btn("glass", "sm", "gap-2")}
-              >
-                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                <span className="font-mono">{wallet.address.slice(0, 4)}…{wallet.address.slice(-4)}</span>
+              <button onClick={() => setWalletOpen(true)}
+                className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-mono font-bold bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 transition-all">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                {wallet.address.slice(0, 4)}…{wallet.address.slice(-4)}
               </button>
             ) : (
-              <button className={btn("primary", "sm")} onClick={() => setWalletOpen(true)}>
-                <Wallet className="w-3.5 h-3.5" />
-                Connect
+              <button onClick={() => setWalletOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-cyan-500 text-slate-950 text-[11px] font-black uppercase tracking-widest hover:bg-cyan-400 transition-colors">
+                <Wallet className="w-3.5 h-3.5" /> Connect
               </button>
             )}
           </div>
@@ -295,96 +379,155 @@ export default function RainSurePage() {
       </header>
 
       {/* HERO */}
-      <section className="relative pt-40 pb-24 px-6 overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-6xl mx-auto text-center"
-        >
+      <section className="relative flex flex-col lg:flex-row min-h-screen overflow-hidden pt-[83px]">
+
+        {/* ── LEFT PANEL: rainfall visualization + headline ── */}
+        <div className="relative lg:w-[56%] min-h-[55vh] lg:min-h-screen bg-slate-950 overflow-hidden">
+          {/* Animated bars */}
+          <RainfallBarsViz />
+
+          {/* Gradient fade — bars bleed into headline */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent pointer-events-none" />
+
+          {/* Headline — bottom-left, NOT centered */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1, duration: 0.5 }}
-            className={cn(
-              "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.4em] mb-10",
-              isDark ? "bg-cyan-500/10 border border-cyan-500/20 text-cyan-400" : "bg-cyan-50 border border-cyan-200 text-cyan-700"
-            )}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute bottom-0 left-0 right-0 z-10 px-6 lg:px-12 pb-10 lg:pb-16"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            Stellar Soroban · Mainnet Live
+            <div className="flex items-center gap-2 mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+              <span className="text-[9px] font-mono text-orange-400 tracking-[0.45em] uppercase">
+                Oracle Active · Live Rainfall Feed
+              </span>
+            </div>
+
+            <h1 className="font-black uppercase leading-[0.82] tracking-[-0.04em]">
+              <span className="block text-[12.5vw] lg:text-[6.8vw] text-white">Drought</span>
+              <span className="block text-[12.5vw] lg:text-[6.8vw] text-white/50">hits.</span>
+              <span className="block text-[12.5vw] lg:text-[6.8vw] text-cyan-400 mt-1">Protocol</span>
+              <span className="block text-[12.5vw] lg:text-[6.8vw] text-cyan-400">pays.</span>
+            </h1>
           </motion.div>
 
-          <h1 className={cn(
-            "text-[5rem] md:text-[9rem] lg:text-[12rem] font-black leading-[0.82] tracking-[-0.04em] uppercase mb-10",
-            isDark ? "text-white" : "text-slate-900"
-          )}>
-            Rain<span className="text-cyan-400">.</span>
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500">
-              Sure.
-            </span>
-          </h1>
-
-          <p className={cn(
-            "text-lg md:text-2xl max-w-3xl mx-auto leading-relaxed mb-14 font-medium",
-            isDark ? "text-slate-400" : "text-slate-600"
-          )}>
-            The world&apos;s first fully autonomous parametric weather insurance engine.
-            If rainfall drops below threshold, <strong className={isDark ? "text-white" : "text-slate-900"}>the protocol pays—automatically, instantly, verifiably.</strong>
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className={btn("primary", "lg", "shadow-xl shadow-cyan-500/20")} onClick={() => setWalletOpen(true)}>
-              Launch Protocol <ArrowRight className="w-4 h-4" />
-            </button>
-            <a href="#protocol" className={btn("glass", "lg")}>
-              View Architecture
-            </a>
+          {/* Day labels along bottom */}
+          <div className="absolute bottom-0 left-6 lg:left-12 right-6 lg:right-12 flex justify-between pointer-events-none z-20" style={{ paddingBottom: "clamp(160px,28vh,240px)" }}>
+            {["30D AGO", "", "", "", "", "", "TODAY"].map((label, i) => (
+              <span key={i} className="text-[7px] font-mono text-slate-700 tracking-widest">
+                {label}
+              </span>
+            ))}
           </div>
-        </motion.div>
+        </div>
 
-        {/* Floating elements */}
-        <motion.div
-          animate={{ y: [0, -12, 0], rotate: [0, 5, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-48 right-12 opacity-20 hidden lg:block"
-        >
-          <CloudRain className="w-24 h-24 text-cyan-400" />
-        </motion.div>
-        <motion.div
-          animate={{ y: [0, 10, 0], rotate: [0, -3, 0] }}
-          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-12 left-16 opacity-10 hidden lg:block"
-        >
-          <Droplets className="w-20 h-20 text-blue-400" />
-        </motion.div>
-      </section>
+        {/* Vertical divider */}
+        <div className="hidden lg:block absolute left-[56%] top-24 bottom-0 w-px bg-gradient-to-b from-transparent via-slate-700/40 to-transparent z-20" />
 
-      {/* STATS */}
-      <section className="px-6 pb-24">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-          {STATS.map((s, i) => (
-            <motion.div
-              key={s.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className={cn(
-                "p-5 rounded-2xl border transition-all",
-                isDark
-                  ? "bg-slate-900/60 border-slate-800 hover:border-cyan-500/30"
-                  : "bg-white border-slate-200 hover:border-cyan-300"
-              )}
-            >
-              <s.icon className={cn("w-5 h-5 mb-3", s.color)} />
-              <div className={cn("text-3xl font-black tracking-tight mb-1", isDark ? "text-white" : "text-slate-900")}>
-                {s.value}
+        {/* ── RIGHT PANEL: pitch + stats + CTA ── */}
+        <div className="lg:w-[44%] flex flex-col justify-center px-6 lg:px-14 py-14 lg:py-0 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.35, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <p className={cn(
+              "text-[10px] font-mono tracking-[0.45em] uppercase mb-6",
+              isDark ? "text-slate-500" : "text-slate-400"
+            )}>
+              Stellar Soroban · Mainnet Live
+            </p>
+
+            <p className={cn(
+              "text-base md:text-lg leading-[1.7] mb-10 max-w-md",
+              isDark ? "text-slate-300" : "text-slate-700"
+            )}>
+              The first autonomous parametric weather insurance engine on Stellar.
+              When rainfall drops below threshold,{" "}
+              <strong className={isDark ? "text-white" : "text-slate-900"}>
+                the smart contract executes payout—no claims, no adjusters, no waiting.
+              </strong>
+            </p>
+
+            {/* Stats 2×2 */}
+            <div className="grid grid-cols-2 gap-3 mb-10">
+              {STATS.map((s) => (
+                <div
+                  key={s.label}
+                  className={cn(
+                    "p-5 rounded-2xl border group transition-all",
+                    isDark
+                      ? "bg-slate-900/70 border-slate-800 hover:border-cyan-500/30"
+                      : "bg-white border-slate-200 hover:border-cyan-300"
+                  )}
+                >
+                  <s.icon className={cn("w-4 h-4 mb-3", s.color)} />
+                  <div className={cn("text-2xl font-black tracking-tight mb-1", isDark ? "text-white" : "text-slate-900")}>
+                    {s.value}
+                  </div>
+                  <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap gap-3 mb-12">
+              <button
+                className={btn("primary", "lg", "shadow-xl shadow-cyan-500/20")}
+                onClick={() => setWalletOpen(true)}
+              >
+                Launch Protocol <ArrowRight className="w-4 h-4" />
+              </button>
+              <a href="#protocol" className={btn("glass", "lg")}>
+                View Architecture
+              </a>
+            </div>
+
+            {/* Live oracle mini-feed */}
+            <div className={cn(
+              "rounded-2xl border overflow-hidden",
+              isDark ? "bg-slate-900/50 border-slate-800" : "bg-slate-50 border-slate-200"
+            )}>
+              <div className={cn(
+                "px-4 py-2.5 border-b flex items-center justify-between",
+                isDark ? "border-slate-800" : "border-slate-200"
+              )}>
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                  <span className="text-[9px] font-mono text-slate-500 tracking-[0.35em] uppercase">Oracle Feed</span>
+                </div>
+                <span className="text-[9px] font-mono text-slate-600">LIVE</span>
               </div>
-              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{s.label}</div>
-            </motion.div>
-          ))}
+              <div className="divide-y divide-slate-800/50">
+                {ORACLE_FEED.map((row) => (
+                  <div key={row.region} className="px-4 py-2.5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className={cn(
+                        "w-1.5 h-1.5 rounded-full shrink-0",
+                        row.status === "TRIGGERED" ? "bg-orange-400" : "bg-cyan-500"
+                      )} />
+                      <span className={cn(
+                        "text-[10px] font-mono",
+                        isDark ? "text-slate-400" : "text-slate-600"
+                      )}>{row.region}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className={cn(
+                        "text-[10px] font-mono font-bold",
+                        row.status === "TRIGGERED" ? "text-orange-400" : "text-cyan-400"
+                      )}>{row.mm}mm</span>
+                      <span className={cn(
+                        "text-[8px] font-mono tracking-widest px-2 py-0.5 rounded-full",
+                        row.status === "TRIGGERED"
+                          ? "text-orange-400 bg-orange-500/10"
+                          : "text-slate-500 bg-slate-800/50"
+                      )}>{row.status}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
